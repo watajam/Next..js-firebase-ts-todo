@@ -12,6 +12,8 @@ import {
 import React, { useEffect, useState } from "react";
 import { db } from "../../lib/firebase";
 import Link from "next/link";
+import { useRecoilState } from "recoil";
+import { todoState } from "../../store/todoState";
 
 //Todoの型定義
 type Tasks = {
@@ -26,8 +28,9 @@ type Filter = "checked" | "unchecked";
 
 const tasks = () => {
   const [input, setInput] = useState("");
-  const [todos, setTodos] = useState<Tasks[]>([]);
+  // const [todos, setTodos] = useState<Tasks[]>([]);
   const [filter, setFilter] = useState<Filter>();
+  const [todos, setTodos] = useRecoilState(todoState);
 
   //Form
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -69,7 +72,7 @@ const tasks = () => {
   };
 
   //チェックボタン
-  const handleAddCheck =  (itemId: string, isCompleted: boolean) => {
+  const handleAddCheck = (itemId: string, isCompleted: boolean) => {
     const washingtonRef = doc(db, "tasks", itemId);
 
     todos.map((todo) => {
@@ -81,16 +84,6 @@ const tasks = () => {
     });
   };
 
-  // const handleAddCheck = (itemId: string, isCompleted: boolean) => {
-  //   const newTodos = todos.map((todo) => {
-  //     if (todo.id === itemId) {
-  //       todo.isCompleted = !isCompleted;
-  //     }
-  //     return todo;
-  //   });
-  //   setTodos(newTodos);
-  // };
-
   //削除
   const handleDeleteTodo = async (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -101,7 +94,7 @@ const tasks = () => {
 
   //TODO詳細遷移◎
   //TODO作成◎
-  //Todoの値をグローバル化
+  //Todoの値をグローバル化◎
   //全てのフィルタリング、未完了フィルタリング、チェックボタン＝完了のフィルタリング◎
 
   //フィルタリング
@@ -157,13 +150,11 @@ const tasks = () => {
         {filteredTodos.map((item) => {
           return (
             <li key={item.id} className="flex ">
-       
               <input
                 onClick={() => handleAddCheck(item.id, item.isCompleted)}
                 type="checkbox"
                 className="form-checkbox"
-
-                checked={item.isCompleted }
+                checked={item.isCompleted}
               />
               <Link href={`/todos/${item.id}`}>
                 <h3 className="text-3xl ">{item.todo}</h3>
