@@ -1,18 +1,6 @@
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDoc,
-  getDocFromCache,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-} from "@firebase/firestore";
-import { log } from "console";
-import { Router, useRouter } from "next/dist/client/router";
-import { route } from "next/dist/server/router";
-import React, { useEffect, useRef, useState } from "react";
+import { deleteDoc, doc, getDoc } from "@firebase/firestore";
+import { useRouter } from "next/dist/client/router";
+import React, { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { db } from "../../../lib/firebase";
 import { todoState } from "../../../store/todoState";
@@ -20,62 +8,53 @@ import Link from "next/link";
 
 //TODO削除◎ //コメント
 const index = () => {
-  const [todos, setTodos] = useRecoilState(todoState);
-  const [todo, setTodo] = useState();
+  // const [detailTodo, setDetailTodo] = useState<string[]>([]);
+  const [detailTodo, setDetailTodo] = useRecoilState(todoState);
   const router = useRouter();
-  console.log(`1回:${router.asPath}`);
 
+  //クエリIDを元にデータを取得
   useEffect(() => {
-    const aaaa = async () => {
-      const docRef = doc(
-        db,
-        `tasks`,
-        `${router.query.id}`
-        // "7RvyUWDKYvo6LMfxbcRY"
-        // router.query.id ? `${router.query.id}` : "7RvyUWDKYvo6LMfxbcRY"
-      );
+    const documentId = async () => {
+      const docRef = doc(db, `tasks`, `${router.query.id}`);
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        setTodo(docSnap.data().todo);
+        // const aaa: string[] | boolean[] | number[] | undefined = [
+        //   docSnap.data().todo,
+        //   docSnap.data().isCompleted,
+        //   docSnap.data().delete,
+        //   docSnap.data().dateTime,
+        // ];
+        // console.log(aaa);
+
+        setDetailTodo(docSnap.data().todo);
       } else {
-        // doc.data() will be undefined in this case
         console.log("No such document!");
       }
     };
-    aaaa();
+    documentId();
   }, [router.query.id]);
 
-  //Todoの取得
-  useEffect(() => {
-    const q = query(collection(db, "tasks"), orderBy("dateTime", "desc"));
-    const unSub = onSnapshot(q, (querySnapshot) => {
-      setTodos(
-        querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          todo: doc.data().todo,
-          isCompleted: doc.data().isCompleted,
-          delete: doc.data().delete,
-          dateTime: doc.data().dateTime,
-        }))
-      );
-    });
-
-    return () => unSub();
-  }, [todo]);
-
   //削除
-  const handleDeleteTodo = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleDeleteTodo = async (e: React.MouseEvent<HTMLHeadingElement>) => {
     await deleteDoc(doc(db, "tasks", `${router.query.id}`));
   };
+
+  //1:todosのstateを使って、遷移した際のrouter.query.idをwhereで条件をつけると前回のstateが格納されてしまい挙動がおかしくなる
+
+  //2:{if(router.query.id === todo(todosをmapしたもの){ <p></p>とするとundefindがはいる}) }
 
   return (
     <div>
       <h1>詳細画面</h1>
-      {router.query.id ? todo : null}
-      <Link href="/todos">
-        <a onClick={(e) => handleDeleteTodo(e)}>削除</a>
-      </Link>
+      <div className="flex">
+        <Link href={`/todos/${router.query.id}/edit`}>
+          <h3 className="text-3xl ">{detailTodo}</h3>
+        </Link>
+        <Link href="/todos">
+          <h3 onClick={(e) => handleDeleteTodo(e)}>削除</h3>
+        </Link>
+      </div>
     </div>
   );
 };

@@ -4,7 +4,6 @@ import {
   orderBy,
   query,
   serverTimestamp,
-  deleteDoc,
   addDoc,
   doc,
   updateDoc,
@@ -12,18 +11,21 @@ import {
 import React, { useEffect, useState } from "react";
 import { db } from "../../lib/firebase";
 import Link from "next/link";
-import { useRecoilState } from "recoil";
-import { todoState } from "../../store/todoState";
-
-
 
 type Filter = "checked" | "unchecked";
 
+type Tasks = {
+  id: string;
+  todo: string;
+  isCompleted: boolean;
+  delete: boolean;
+  dateTime: number;
+};
+
 const tasks = () => {
   const [input, setInput] = useState("");
-  // const [todos, setTodos] = useState<Tasks[]>([]);
+  const [todos, setTodos] = useState<Tasks[]>([]);
   const [filter, setFilter] = useState<Filter>();
-  const [todos, setTodos] = useRecoilState(todoState);
 
   //Form
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -55,7 +57,6 @@ const tasks = () => {
 
   //追加
   const handleAddTodo = async (e: React.MouseEvent<HTMLButtonElement>) => {
-
     await addDoc(collection(db, "tasks"), {
       todo: input,
       isCompleted: false,
@@ -63,35 +64,22 @@ const tasks = () => {
       // dateTime: "0",
       dateTime: serverTimestamp(),
     });
-     setInput("");
+    setInput("");
   };
 
   //チェックボタン
   const handleAddCheck = (itemId: string, isCompleted: boolean) => {
-    const washingtonRef = doc(db, "tasks", itemId);
-
+    // const washingtonRef = doc(db, "tasks", itemId);
 
     todos.map((todo) => {
       if (todo.id === itemId) {
-        updateDoc(washingtonRef, {
+        updateDoc(doc(db, "tasks", itemId), {
           isCompleted: !isCompleted,
         });
       }
     });
   };
 
-  //削除
-  // const handleDeleteTodo = async (
-  //   e: React.MouseEvent<HTMLButtonElement>,
-  //   id: string
-  // ) => {
-  //   await deleteDoc(doc(db, "tasks", id));
-  // };
-
-  //TODO詳細遷移◎
-  //TODO作成◎
-  //Todoの値をグローバル化◎
-  //全てのフィルタリング、未完了フィルタリング、チェックボタン＝完了のフィルタリング◎
 
   //フィルタリング
   //todoの配列をフィルタリングして新しい配列に並び替える
@@ -146,7 +134,6 @@ const tasks = () => {
         {filteredTodos.map((item) => {
           return (
             <li key={item.id} className="flex ">
-
               <input
                 onClick={() => handleAddCheck(item.id, item.isCompleted)}
                 type="checkbox"
@@ -156,7 +143,6 @@ const tasks = () => {
               <Link href={`/todos/${item.id}`}>
                 <h3 className="text-3xl ">{item.todo}</h3>
               </Link>
-              {/* <input type="datetime-local" value={"2018-06-12T19:30" }/> */}
             </li>
           );
         })}
