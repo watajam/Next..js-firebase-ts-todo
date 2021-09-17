@@ -15,14 +15,7 @@ import Link from "next/link";
 import { useRecoilState } from "recoil";
 import { todoState } from "../../store/todoState";
 
-//Todoの型定義
-type Tasks = {
-  id: string;
-  todo: string;
-  isCompleted: boolean;
-  delete: boolean;
-  dateTime: number;
-};
+
 
 type Filter = "checked" | "unchecked";
 
@@ -62,18 +55,21 @@ const tasks = () => {
 
   //追加
   const handleAddTodo = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    setInput("");
+
     await addDoc(collection(db, "tasks"), {
       todo: input,
       isCompleted: false,
       delete: false,
+      // dateTime: "0",
       dateTime: serverTimestamp(),
     });
+     setInput("");
   };
 
   //チェックボタン
   const handleAddCheck = (itemId: string, isCompleted: boolean) => {
     const washingtonRef = doc(db, "tasks", itemId);
+
 
     todos.map((todo) => {
       if (todo.id === itemId) {
@@ -85,12 +81,12 @@ const tasks = () => {
   };
 
   //削除
-  const handleDeleteTodo = async (
-    e: React.MouseEvent<HTMLButtonElement>,
-    id: string
-  ) => {
-    await deleteDoc(doc(db, "tasks", id));
-  };
+  // const handleDeleteTodo = async (
+  //   e: React.MouseEvent<HTMLButtonElement>,
+  //   id: string
+  // ) => {
+  //   await deleteDoc(doc(db, "tasks", id));
+  // };
 
   //TODO詳細遷移◎
   //TODO作成◎
@@ -150,22 +146,17 @@ const tasks = () => {
         {filteredTodos.map((item) => {
           return (
             <li key={item.id} className="flex ">
+
               <input
                 onClick={() => handleAddCheck(item.id, item.isCompleted)}
                 type="checkbox"
                 className="form-checkbox"
-                checked={item.isCompleted}
+                defaultChecked={item.isCompleted}
               />
               <Link href={`/todos/${item.id}`}>
                 <h3 className="text-3xl ">{item.todo}</h3>
               </Link>
               {/* <input type="datetime-local" value={"2018-06-12T19:30" }/> */}
-              <button
-                onClick={(e) => handleDeleteTodo(e, item.id)}
-                className="inline-block px-3 py-1 mx-auto text-white bg-blue-600 rounded-md hover:bg-blue-800 md:mx-0"
-              >
-                削除
-              </button>
             </li>
           );
         })}
