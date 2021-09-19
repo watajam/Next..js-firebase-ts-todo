@@ -8,7 +8,6 @@ import Link from "next/link";
 
 //TODO削除◎ //コメント
 const index = () => {
-  // const [detailTodo, setDetailTodo] = useState<string[]>([]);
   const [detailTodo, setDetailTodo] = useRecoilState(todoState);
   const router = useRouter();
 
