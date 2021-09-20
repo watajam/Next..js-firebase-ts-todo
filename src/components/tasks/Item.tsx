@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { memo } from "react";
 import Link from "next/link";
 
 type Props = {
@@ -11,10 +10,10 @@ type Props = {
   ) => void;
 };
 
-export const Item: React.VFC<Props> = (props) => {
+export const Item: React.VFC<Props> = memo((props) => {
   return (
-    <tr key={props.item.id} className="px-4 py-2 border ">
-      <td className="p-2 px-4 border">
+    <tr key={props.item.id} className="px-4 py-2 border">
+      <td className="px-4 py-2 border ">
         <input
           type="checkbox"
           onClick={(e) =>
@@ -26,11 +25,11 @@ export const Item: React.VFC<Props> = (props) => {
 
       <td className="px-4 py-2 border ">
         <Link href={`/todos/${props.item.id}`}>
-          <p className="text-3xl truncate w-96 hover:text-blue-500">
+          <p className="text-2xl truncate hover:text-blue-500 w-96">
             {props.item.todo}
           </p>
         </Link>
       </td>
     </tr>
   );
-};
+});

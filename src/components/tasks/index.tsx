@@ -22,7 +22,7 @@ type Tasks = {
   dateTime: number;
 };
 
-export const Tasks: React.VFC = memo(() => {
+export const Todos: React.VFC = memo(() => {
   const [todos, setTodos] = useState<Tasks[]>([]);
   const [filter, setFilter] = useState<Filter>();
 
@@ -61,18 +61,17 @@ export const Tasks: React.VFC = memo(() => {
   };
 
   //フィルタリング
-  //todoの配列をフィルタリングして新しい配列に並び替える
+  // todoの配列をフィルタリングして新しい配列に並び替える
   const filteredTodos = todos.filter((item) => {
     switch (filter) {
       case "checked":
-        item.isCompleted;
-        break;
+        return item.isCompleted;
+
       case "unchecked":
-        !item.isCompleted;
-        break;
+        return !item.isCompleted;
+
       default:
-        item;
-        break;
+        return item;
     }
   });
 
@@ -82,22 +81,21 @@ export const Tasks: React.VFC = memo(() => {
   };
 
   return (
-    <div className="">
-      <h1 className="text-4xl">Task Item</h1>
-
+    <div className="mt-12">
       <Form />
       <Filtering handleChenge={handleFilterChenge} />
-
       <table className="table-fixed">
         <thead>
           <tr className="bg-blue-300 border">
-            <th className="border ">✓</th>
+            <th className="border">✓</th>
             <th className="border ">Title</th>
           </tr>
         </thead>
-        <tbody className="bg-gray-50">
+        <tbody className=" bg-gray-50">
           {filteredTodos.map((item) => {
-            return <Item item={item} handleClick={handleAddCheck} />;
+            return (
+              <Item key={item.id} item={item} handleClick={handleAddCheck} />
+            );
           })}
         </tbody>
       </table>

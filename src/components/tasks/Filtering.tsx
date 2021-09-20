@@ -6,7 +6,7 @@ type Props = {
 
 export const Filtering: React.VFC<Props> = memo((props) => {
   return (
-    <div>
+    <div className="flex justify-end mt-7">
       <label>
         フィルタリング :
         <select onChange={props.handleChenge} className="border-2">

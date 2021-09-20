@@ -26,19 +26,21 @@ export const Form: React.VFC = memo(() => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="w-full">
+      <form onSubmit={handleSubmit} className="m-auto space-x-5 w-96">
         <input
           onChange={handleChenge}
           type="text"
           value={input}
+          maxLength={50}
           placeholder="タスクを入力してください"
-          className="border-2"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200 w-72 "
         />
+
         <button
           onClick={handleAddTodo}
           disabled={!input}
-          className="px-4 py-1 mx-auto text-white bg-blue-600 rounded-md nline-block hover:bg-blue-800 md:mx-0 disabled:bg-gray-400"
+          className="px-4 py-2 mx-auto text-white <Layout> rounded-md nline-block bg-blue-800 md:mx-0 disabled:bg-gray-400"
         >
           追加
         </button>
