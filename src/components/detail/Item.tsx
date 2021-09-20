@@ -1,43 +1,50 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/dist/client/router";
-import { deleteDoc, doc, getDoc } from "@firebase/firestore";
+import { deleteDoc, doc, getDoc, onSnapshot, query } from "@firebase/firestore";
 import { db } from "../../lib/firebase";
-import { useRecoilState } from "recoil";
-import { todoState } from "../../store/todoState";
 
+export const Item: React.VFC = memo(() => {
+  const [detailTodo, setDetailTodo] = useState<string[]>();
+  const router = useRouter();
+  
+  //クエリIDを元にデータを取得
+  useEffect(() => {
+    const q = doc(db, `tasks`, `${router.query.id}`);
+    const unSub = onSnapshot(q, (querySnapshot) => {
+      setDetailTodo(querySnapshot.data().todo);
+    });
 
-export const Item: React.VFC = memo((props) => {
-   const [detailTodo, setDetailTodo] = useRecoilState(todoState);
-   const router = useRouter();
+    return () => unSub();
+  }, [router.query.id]);
 
-   //クエリIDを元にデータを取得
-   useEffect(() => {
-     const documentId = async () => {
-       const docRef = doc(db, `tasks`, `${router.query.id}`);
-       const docSnap = await getDoc(docRef);
+  //  //クエリIDを元にデータを取得
+  //  useEffect(() => {
+  //    const documentId = async () => {
+  //      const docRef = doc(db, `tasks`, `${router.query.id}`);
+  //      const docSnap = await getDoc(docRef);
 
-       if (docSnap.exists()) {
-         // const aaa: string[] | boolean[] | number[] | undefined = [
-         //   docSnap.data().todo,
-         //   docSnap.data().isCompleted,
-         //   docSnap.data().delete,
-         //   docSnap.data().dateTime,
-         // ];
-         // console.log(aaa);
+  //      if (docSnap.exists()) {
+  //        // const aaa: string[] | boolean[] | number[] | undefined = [
+  //        //   docSnap.data().todo,
+  //        //   docSnap.data().isCompleted,
+  //        //   docSnap.data().delete,
+  //        //   docSnap.data().dateTime,
+  //        // ];
+  //        // console.log(aaa);
 
-         setDetailTodo(docSnap.data().todo);
-       } else {
-         console.log("No such document!");
-       }
-     };
-     documentId();
-   }, [router.query.id]);
+  //        setDetailTodo(docSnap.data().todo);
+  //      } else {
+  //        console.log("No such document!");
+  //      }
+  //    };
+  //    documentId();
+  //  }, [router.query.id]);
 
-   //削除
-   const handleDeleteTodo = async (e: React.MouseEvent<HTMLHeadingElement>) => {
-     await deleteDoc(doc(db, "tasks", `${router.query.id}`));
-   };
+  //削除
+  const handleDeleteTodo = async (e: React.MouseEvent<HTMLHeadingElement>) => {
+    await deleteDoc(doc(db, "tasks", `${router.query.id}`));
+  };
 
   return (
     <>

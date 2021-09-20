@@ -86,7 +86,7 @@ export const Todos: React.VFC = memo(() => {
       <Filtering handleChenge={handleFilterChenge} />
       <table className="table-fixed">
         <thead>
-          <tr className="bg-blue-300 border">
+          <tr className="text-gray-100 bg-blue-300 border">
             <th className="border">✓</th>
             <th className="border ">Title</th>
           </tr>
